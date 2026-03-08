@@ -76,12 +76,14 @@ def update_power(id):
         return jsonify({"error": "Power not found"}), 404
 
     data = request.get_json()
-    description = data.get("description", "").strip()
-    if not description or len(description) < 20:
+    description = data.get("description")
+
+    if not description or len(description.strip()) < 20:
         return jsonify({"errors": ["validation errors"]}), 400
 
-    power.description = description
+    power.description = description.strip()
     db.session.commit()
+
     return jsonify(power.to_dict(only=("id", "name", "description"))), 200
 
 # add a hero power 
@@ -105,13 +107,14 @@ def create_hero_power():
     db.session.add(hero_power)
     db.session.commit()
 
-    response = hero_power.to_dict(
-        only=("id", "strength", "hero_id", "power_id"),
-        include=("hero", "power")
-    )
-    # Limit nested serialization fields
-    response["hero"] = hero.to_dict(only=("id", "name", "super_name"))
-    response["power"] = power.to_dict(only=("id", "name", "description"))
+    response = {
+        "id": hero_power.id,
+        "hero_id": hero_power.hero_id,
+        "power_id": hero_power.power_id,
+        "strength": hero_power.strength,
+        "hero": hero.to_dict(only=("id", "name", "super_name")),
+        "power": power.to_dict(only=("id", "name", "description"))
+    }
 
     return jsonify(response), 201
 
