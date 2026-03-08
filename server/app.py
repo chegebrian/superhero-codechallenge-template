@@ -25,6 +25,7 @@ api = Api(app)
 def index():
     return '<h1>Code challenge</h1>'
 
+# heroes route
 @app.route("/heroes")
 def get_heroes():
 
@@ -41,6 +42,7 @@ def get_heroes():
 
     return jsonify(heroes_list), 200
 
+# specific hero
 @app.route("/heroes/<int:id>")
 def get_hero(id):
 
@@ -51,12 +53,23 @@ def get_hero(id):
 
     return jsonify(hero.to_dict()), 200
 
+# powers route
 @app.route("/powers")
 def get_powers():
 
     powers = Power.query.all()
 
     return jsonify([p.to_dict() for p in powers]), 200
+
+@app.route("/powers/<int:id>")
+def get_power(id):
+
+    power = Power.query.get(id)
+
+    if not power:
+        return {"error": "Power not found"}, 404
+
+    return jsonify(power.to_dict()), 200
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
