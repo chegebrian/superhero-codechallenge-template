@@ -87,25 +87,33 @@ def update_power(id):
 # add a hero power 
 @app.route("/hero_powers", methods=["POST"])
 def create_hero_power():
-
     data = request.get_json()
+    strength = data.get("strength")
+    hero_id = data.get("hero_id")
+    power_id = data.get("power_id")
 
-    try:
+    if strength not in ["Strong", "Weak", "Average"]:
+        return jsonify({"errors": ["validation errors"]}), 400
 
-        hero_power = HeroPower(
-            strength=data["strength"],
-            hero_id=data["hero_id"],
-            power_id=data["power_id"]
-        )
+    hero = Hero.query.get(hero_id)
+    power = Power.query.get(power_id)
 
-        db.session.add(hero_power)
-        db.session.commit()
+    if not hero or not power:
+        return jsonify({"errors": ["validation errors"]}), 400
 
-        return jsonify(hero_power.to_dict()), 201
+    hero_power = HeroPower(strength=strength, hero=hero, power=power)
+    db.session.add(hero_power)
+    db.session.commit()
 
-    except ValueError as e:
+    response = hero_power.to_dict(
+        only=("id", "strength", "hero_id", "power_id"),
+        include=("hero", "power")
+    )
+    # Limit nested serialization fields
+    response["hero"] = hero.to_dict(only=("id", "name", "super_name"))
+    response["power"] = power.to_dict(only=("id", "name", "description"))
 
-        return {"errors": [str(e)]}, 400
+    return jsonify(response), 201
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
