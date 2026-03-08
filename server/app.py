@@ -3,7 +3,7 @@
 from flask import Flask, request, make_response
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
-from models import db, Hero, Power, HeroPower
+from server.models import db, Hero, Power, HeroPower
 import os
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -15,9 +15,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
 
+db.init_app(app)
+
 migrate = Migrate(app, db)
 
-db.init_app(app)
+api = Api(app)
 
 @app.route('/')
 def index():
