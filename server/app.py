@@ -71,5 +71,26 @@ def get_power(id):
 
     return jsonify(power.to_dict()), 200
 
+@app.route("/powers/<int:id>", methods=["PATCH"])
+def update_power(id):
+
+    power = Power.query.get(id)
+
+    if not power:
+        return {"error": "Power not found"}, 404
+
+    data = request.get_json()
+
+    try:
+        power.description = data["description"]
+
+        db.session.commit()
+
+        return jsonify(power.to_dict()), 200
+
+    except ValueError as e:
+
+        return {"errors": [str(e)]}, 400
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
