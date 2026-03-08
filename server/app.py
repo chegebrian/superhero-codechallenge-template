@@ -56,10 +56,9 @@ def get_hero(id):
 # powers route
 @app.route("/powers")
 def get_powers():
-
     powers = Power.query.all()
-
-    return jsonify([p.to_dict() for p in powers]), 200
+    powers_list = [power.to_dict(only=("id", "name", "description")) for power in powers]
+    return jsonify(powers_list), 200
 
 # specific power route
 @app.route("/powers/<int:id>")
