@@ -51,5 +51,12 @@ def get_hero(id):
 
     return jsonify(hero.to_dict()), 200
 
+@app.route("/powers")
+def get_powers():
+
+    powers = Power.query.all()
+
+    return jsonify([p.to_dict() for p in powers]), 200
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
