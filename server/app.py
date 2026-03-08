@@ -63,13 +63,10 @@ def get_powers():
 # specific power route
 @app.route("/powers/<int:id>")
 def get_power(id):
-
     power = Power.query.get(id)
-
     if not power:
-        return {"error": "Power not found"}, 404
-
-    return jsonify(power.to_dict()), 200
+        return jsonify({"error": "Power not found"}), 404
+    return jsonify(power.to_dict(only=("id", "name", "description"))), 200
 
 # edit hero power
 @app.route("/powers/<int:id>", methods=["PATCH"])
