@@ -71,24 +71,18 @@ def get_power(id):
 # edit hero power
 @app.route("/powers/<int:id>", methods=["PATCH"])
 def update_power(id):
-
     power = Power.query.get(id)
-
     if not power:
-        return {"error": "Power not found"}, 404
+        return jsonify({"error": "Power not found"}), 404
 
     data = request.get_json()
+    description = data.get("description", "").strip()
+    if not description or len(description) < 20:
+        return jsonify({"errors": ["validation errors"]}), 400
 
-    try:
-        power.description = data["description"]
-
-        db.session.commit()
-
-        return jsonify(power.to_dict()), 200
-
-    except ValueError as e:
-
-        return {"errors": [str(e)]}, 400
+    power.description = description
+    db.session.commit()
+    return jsonify(power.to_dict(only=("id", "name", "description"))), 200
 
 # add a hero power 
 @app.route("/hero_powers", methods=["POST"])
