@@ -91,6 +91,28 @@ def update_power(id):
     except ValueError as e:
 
         return {"errors": [str(e)]}, 400
+    
+@app.route("/hero_powers", methods=["POST"])
+def create_hero_power():
+
+    data = request.get_json()
+
+    try:
+
+        hero_power = HeroPower(
+            strength=data["strength"],
+            hero_id=data["hero_id"],
+            power_id=data["power_id"]
+        )
+
+        db.session.add(hero_power)
+        db.session.commit()
+
+        return jsonify(hero_power.to_dict()), 201
+
+    except ValueError as e:
+
+        return {"errors": [str(e)]}, 400
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
