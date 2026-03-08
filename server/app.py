@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, jsonify
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from server.models import db, Hero, Power, HeroPower
@@ -24,6 +24,22 @@ api = Api(app)
 @app.route('/')
 def index():
     return '<h1>Code challenge</h1>'
+
+@app.route("/heroes")
+def get_heroes():
+
+    heroes = Hero.query.all()
+
+    heroes_list = [
+        {
+            "id": hero.id,
+            "name": hero.name,
+            "super_name": hero.super_name
+        }
+        for hero in heroes
+    ]
+
+    return jsonify(heroes_list), 200
 
 
 if __name__ == '__main__':
