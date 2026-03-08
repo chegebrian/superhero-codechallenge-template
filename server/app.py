@@ -61,6 +61,7 @@ def get_powers():
 
     return jsonify([p.to_dict() for p in powers]), 200
 
+# specific power route
 @app.route("/powers/<int:id>")
 def get_power(id):
 
@@ -71,6 +72,7 @@ def get_power(id):
 
     return jsonify(power.to_dict()), 200
 
+# edit hero power
 @app.route("/powers/<int:id>", methods=["PATCH"])
 def update_power(id):
 
@@ -91,7 +93,8 @@ def update_power(id):
     except ValueError as e:
 
         return {"errors": [str(e)]}, 400
-    
+
+# add a hero power 
 @app.route("/hero_powers", methods=["POST"])
 def create_hero_power():
 
